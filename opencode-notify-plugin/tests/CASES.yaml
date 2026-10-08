@@ -1,0 +1,56 @@
+# Test case tree for opencode-notify-plugin
+cases:
+  - name: install
+    children:
+      - name: installs_plugin_files
+        expect: index.js, package.json, opencode.json installed
+      - name: installs_uninstaller_on_path
+        expect: ai-box-opencode-notify-plugin-uninstall in ~/.local/bin
+      - name: adds_bin_to_rc_when_missing
+        expect: PATH export added to rc file
+      - name: no_rc_change_when_path_present
+        expect: rc file untouched when BIN already in PATH
+      - name: second_install_idempotent
+        expect: reinstalling succeeds
+      - name: reinstall_uninstalls_first
+        expect: stale files removed before reinstalling
+      - name: opencode_missing
+        expect: '"opencode" not found error, code 1, nothing installed'
+
+  - name: uninstall
+    children:
+      - name: removes_components
+        expect: plugin dir and ai-box-opencode-notify-plugin-uninstall removed
+      - name: reports_when_not_installed
+        expect: '"not installed" reported'
+
+  - name: notifications
+    children:
+      - name: succeeded_notifies
+        expect: '"Task complete" via notify-send'
+      - name: failed_notifies
+        expect: '"Session error" via notify-send'
+      - name: permission_asked_notifies
+        expect: '"needs your approval" via notify-send'
+      - name: form_created_notifies
+        expect: '"Question:" with form field text via notify-send'
+      - name: unknown_event_ignored
+        expect: no notify-send call
+      - name: subagent_execution_ignored
+        expect: child-session completion is not notified
+      - name: subagent_permission_not_ignored
+        expect: child-session permission request is still notified
+      - name: dedupe_same_event_once
+        expect: duplicate delivery of one event notifies once
+      - name: dedupe_disabled_via_env
+        expect: DEV_NOTIFY_DEDUPE=0 allows both deliveries
+      - name: throttle_suppresses_burst
+        expect: second event inside 1.5s is dropped
+      - name: project_name_from_session
+        expect: title uses the session directory name
+      - name: custom_notify_command_option
+        expect: options.notifyCommand is used
+      - name: notify_command_env_override
+        expect: DEV_NOTIFY_COMMAND is used
+      - name: notify_send_failure_tolerated
+        expect: failing notify command does not crash the plugin

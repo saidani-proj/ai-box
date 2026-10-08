@@ -1,0 +1,98 @@
+# Test case tree for notify-bridge (notify-bridge)
+cases:
+  - name: shim
+    children:
+      - name: version
+        command: notify-send-shim.sh -v
+        expect: '"notify-send (notify-bridge) 3.0.0", code 0'
+      - name: help
+        command: notify-send-shim.sh --help
+        expect: 'prints usage, code 0'
+      - name: unknown_option_fails
+        command: notify-send-shim.sh --bogus "t" "b"
+        expect: '"unknown option", code 1'
+      - name: replace_id_ignored
+        command: notify-send-shim.sh -r 42 "t" "b"
+        expect: '"code 0" message written'
+      - name: invalid_urgency_defaults_to_normal
+        command: notify-send-shim.sh -u bogus "t" "b"
+        expect: '"U=bm9ybWFs" in message file, code 0'
+      - name: message_format
+        expect: AN1 header, base64 fields, B= line, raw body
+      - name: body_with_newlines_stored_raw
+        expect: body kept verbatim after B=
+      - name: id_increments
+        expect: two calls produce msg-...-001 and msg-...-002
+      - name: print_id
+        command: notify-send-shim.sh -p "t" "b"
+        expect: 'prints the queue id, code 0'
+      - name: option_parsing
+        command: notify-send-shim.sh -u critical -a MyApp -i myicon -t 5000 "t" "b"
+        expect: '"U=", "A=", "I=", "X=" set accordingly'
+      - name: queue_cap_drops_oldest
+        expect: at most AI_BOX_NOTIF_MAX files, newest kept, verbose warns
+      - name: queue_missing_fails
+        expect: '"queue missing", code 1'
+
+  - name: listener
+    children:
+      - name: rejects_relative_dir
+        expect: '"must be absolute", code 1'
+      - name: version
+        command: listener.sh --version
+        expect: '"1.0.0", code 0'
+      - name: rejects_shim_as_send
+        expect: '"shim", code 1'
+      - name: missing_send_binary
+        expect: '"notify-send not found in PATH", code 1'
+      - name: once_drains_queue
+        expect: 'per README, --once drains pending messages and delivers them, code 0'
+      - name: delivers_message_after_start
+        expect: message queued while listener runs is delivered to notify-send
+      - name: full_argument_reconstruction
+        expect: reconstructed -a/-i/-u/-t line passed to host notify-send
+      - name: hints_forwarded
+        expect: repeated --hint options appear on the notify-send line
+      - name: debris_dropped
+        expect: malformed files are removed by the listener
+      - name: stale_in_files_reaped
+        expect: .in.* older than AI_BOX_NOTIF_STALE seconds removed, recent kept
+      - name: second_listener_exits_via_lock
+        expect: second listener exits 0 immediately when one is running
+
+  - name: install_host
+    children:
+      - name: installs_components
+        command: install-host.sh
+        expect: listener, uninstaller, autostart entry, 0777 queue created
+      - name: custom_bin_dir
+        expect: AI_BOX_NOTIF_BIN overrides target directory
+      - name: reinstall_uninstalls_first
+        expect: previous install removed before reinstalling, code 0
+      - name: uninstall_removes_components
+        command: uninstall-host.sh
+        expect: all host components removed
+
+  - name: install_container
+    children:
+      - name: installs_shim
+        command: install-container.sh
+        expect: notify-send shim and uninstaller installed
+      - name: volume_mounted_ok
+        expect: '"mounted" reported'
+      - name: reinstall_uninstalls_first
+        expect: previous shim removed before reinstalling, code 0
+      - name: volume_missing
+        expect: '"does not exist" reported'
+      - name: volume_not_writable
+        expect: '"not writable" reported'
+      - name: path_note_added_to_rc
+        expect: PATH export added to rc file, note printed
+      - name: path_already_present
+        expect: no rc modification when BIN already in PATH
+
+  - name: uninstall_container
+    children:
+      - name: removes_shim
+        command: uninstall-container.sh
+        expect: shim and uninstaller removed

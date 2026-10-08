@@ -1,0 +1,199 @@
+# Test case tree for ai-box
+# Each node can have: name, context, command, expect, children
+cases:
+  - name: help_output
+    children:
+      - name: no_argument
+        command: ai-box
+        expect: error '"Unknown command"' + usage, code 1
+      - name: help
+        command: ai-box help
+        expect: prints usage, code 0
+      - name: flag_h
+        command: ai-box -h
+        expect: prints usage, code 0
+      - name: flag_help
+        command: ai-box --help
+        expect: prints usage, code 0
+
+  - name: version
+    children:
+      - name: flag
+        command: ai-box --version
+        expect: '"ai-box 1.0.0", code 0'
+      - name: after_command
+        command: ai-box up --version
+        expect: '"ai-box 1.0.0", code 0'
+
+  - name: unknown_command
+    command: ai-box foobar
+    expect: '"Unknown command: foobar" + usage, code 1'
+
+  - name: unknown_option
+    command: ai-box up --bogus
+    expect: '"Unknown option: --bogus" + usage, code 1'
+
+  - name: install
+    children:
+      - name: default
+        command: ai-box install
+        expect: container "ai-box" created (ubuntu:26.04), --add-host present, notifs volume mounted, work volume mounted at /work
+      - name: with_id
+        command: ai-box install --id test
+        expect: container "ai-box-test" created
+      - name: id_equals
+        command: ai-box install --id=test
+        expect: container "ai-box-test" created
+      - name: id_missing_value
+        command: ai-box install --id
+        expect: '"Error: --id needs a value", code 1'
+      - name: disable_net
+        command: ai-box install --disable-net
+        expect: no --add-host (explicit flag)
+      - name: disable_notifs
+        command: ai-box install --disable-notifs
+        expect: no notifs volume mounted
+      - name: create_opts_passthrough
+        command: ai-box install -- --cpus 2
+        expect: extra options forwarded to docker create
+      - name: docker_missing
+        context: docker not installed / create failure
+        expect: error propagated, non-zero code
+
+  - name: install_only_options
+    children:
+      - name: net_on_up
+        command: ai-box up --disable-net
+        expect: '"Error: --disable-net/--disable-notifs only apply to install", code 1'
+      - name: notifs_on_down
+        command: ai-box down --disable-notifs
+        expect: '"Error: --disable-net/--disable-notifs only apply to install", code 1'
+      - name: net_on_exe
+        command: ai-box exe --disable-net
+        expect: error, code 1
+      - name: notifs_on_root
+        command: ai-box root --disable-notifs
+        expect: error, code 1
+
+  - name: up
+    children:
+      - name: nominal
+        context: container exists
+        command: ai-box up
+        expect: container stopped then started, ~/.ai-box/work points to $PWD, interactive shell opened, working directory /work, uid/gid same as host
+      - name: from_inside_ai_box_work
+        context: $PWD = ~/.ai-box/work or one of its subdirectories
+        command: ai-box up
+        expect: 'error "$PWD is inside ~/.ai-box/work", code 1, symlink unchanged'
+      - name: notifs_dir_created
+        expect: ~/.ai-box/notifs exists after up
+      - name: symlink_updated
+        expect: running up from another directory re-points ~/.ai-box/work
+      - name: container_missing
+        context: no prior install
+        command: ai-box up
+        expect: docker error, non-zero code
+
+  - name: down
+    children:
+      - name: nominal
+        command: ai-box down
+        expect: container stopped, code 0
+      - name: container_missing
+        command: ai-box down
+        expect: docker error, non-zero code
+
+  - name: exe
+    children:
+      - name: nominal
+        context: container running
+        command: ai-box exe
+        expect: shell opened as user (host uid/gid), workdir /work, symlink unmodified
+      - name: container_stopped
+        command: ai-box exe
+        expect: docker error, non-zero code
+
+  - name: root
+    children:
+      - name: nominal
+        command: ai-box root
+        expect: shell opened as root in the container
+      - name: container_stopped
+        command: ai-box root
+        expect: docker error, non-zero code
+
+  - name: uninstall
+    children:
+      - name: nominal
+        command: ai-box uninstall
+        expect: container stopped and removed, work symlink deleted, ~/.ai-box kept
+      - name: named_id
+        command: ai-box uninstall --id test
+        expect: container ai-box-test removed, ~/.ai-box kept
+
+  - name: named_id
+    children:
+      - name: isolate_containers
+        context: two boxes with different --id
+        expect: each command targets its own container
+      - name: full_cycle
+        command: "ai-box install --id x && ai-box up --id x && ai-box down --id x && ai-box uninstall --id x"
+        expect: install/up/down/uninstall cycle OK for ai-box-x, ~/.ai-box kept
+      - name: work_dir_per_id
+        command: ai-box install --id test
+        expect: '~/.ai-box/work-test mounted at /work; ~/.ai-box/work-test symlink after up'
+
+  - name: install_uninstall_scripts
+    children:
+      - name: install_default_user
+        command: ./install.sh
+        expect: ai-box and ai-box-uninstall copied to ~/.local/bin, mode 755
+      - name: install_unknown_option
+        command: ./install.sh --bogus
+        expect: '"error: install.sh takes no arguments", code 1'
+      - name: install_bin_not_writable
+        context: bin_dir not writable
+        command: ./install.sh
+        expect: clear error message, code 1
+      - name: install_docker_missing
+        context: docker missing from PATH
+        command: ./install.sh
+        expect: 'warning "docker not found" but install still succeeds'
+      - name: uninstall_default_user
+        command: ./uninstall.sh
+        expect: ai-box and ai-box-uninstall removed from ~/.local/bin
+      - name: uninstall_unknown_option
+        command: ./uninstall.sh --bogus
+        expect: '"error: unknown option", code 1'
+      - name: uninstall_help
+        command: ./uninstall.sh -h
+        expect: '"Usage", code 0'
+      - name: uninstall_help_long
+        command: ./uninstall.sh --help
+        expect: '"Usage", code 0'
+      - name: uninstall_idempotent
+        command: ./uninstall.sh
+        expect: '"removed ai-box", code 0'
+      - name: roundtrip
+        expect: install then uninstall leaves no trace
+      - name: installed_version
+        expect: installed copy of ai-box runs --version
+      - name: reinstall_keeps_data
+        expect: existing install uninstalled with --keep-data, scripts reinstalled, containers and ~/.ai-box preserved
+      - name: uninstall_confirm_yes
+        expect: '"Delete this data?" prompt, containers and ~/.ai-box removed on "y"'
+      - name: uninstall_confirm_no
+        expect: '"ai-box data kept" on "n", containers and ~/.ai-box preserved'
+      - name: uninstall_keep_data
+        expect: '"ai-box data kept (--keep-data)", containers and ~/.ai-box preserved, no prompt'
+      - name: uninstall_no_data
+        expect: no prompt when no ai-box data exists
+
+  - name: shared_mounts
+    children:
+      - name: edit_host_files_from_box
+        context: file created in the box via /work
+        expect: visible on host at the same path
+      - name: notifs_shared
+        context: file in ~/.ai-box/notifs
+        expect: visible at /notifs inside the box
