@@ -98,7 +98,7 @@ while [ $# -gt 0 ]; do
 	case $1 in
 	--once) ONCE=1 ;;
 	--interval) shift; INTERVAL=${1:-1} ;;
-	--version) printf '1.0.0\n'; exit 0 ;;
+	--version) printf '1.1.0\n'; exit 0 ;;
 	--help | -\?) usage; exit 0 ;;
 	*) printf '%s: unknown option: %s\n' "${0##*/}" "$1" >&2; exit 1 ;;
 	esac

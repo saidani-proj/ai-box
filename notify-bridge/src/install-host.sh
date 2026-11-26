@@ -23,7 +23,7 @@ install -m 0755 "$HERE/uninstall-host.sh" "$BIN_DIR/ai-box-notify-bridge-uninsta
 cat >"$AUTOSTART_DIR/ai-box-notify-bridge-listener.desktop" <<EOF
 [Desktop Entry]
 Type=Application
-Version=1.0.0
+Version=1.1.0
 Name=AI box notifications (listener)
 Comment=Forwards the notify-bridge queue to notify-send
 Exec=$BIN_DIR/ai-box-notify-bridge-listener

@@ -76,7 +76,7 @@ removed after `AI_BOX_NOTIF_STALE` seconds (60 by default).
 With a single command (recommended):
 
 ```sh
-curl -fsSL https://github.com/saidani-proj/ai-box/releases/download/v1.0.0/notify-bridge-host-remote-install.sh | bash
+curl -fsSL https://github.com/saidani-proj/ai-box/releases/download/v1.1.0/notify-bridge-host-remote-install.sh | bash
 ```
 
 The release ships two packages built by `dist/build.sh`:
@@ -88,7 +88,7 @@ Distro bootstraps: `dist/notify-bridge-host-remote-install.sh` (host) and
 ### 1. On the host
 
 ```sh
-curl -fsSL https://github.com/saidani-proj/ai-box/releases/download/v1.0.0/notify-bridge-host-remote-install.sh | bash
+curl -fsSL https://github.com/saidani-proj/ai-box/releases/download/v1.1.0/notify-bridge-host-remote-install.sh | bash
 ```
 
 Installs `~/.local/bin/ai-box-notify-bridge-listener`,
@@ -108,7 +108,7 @@ diagnostics easier.
 ### 3. In the container
 
 ```sh
-curl -fsSL https://github.com/saidani-proj/ai-box/releases/download/v1.0.0/notify-bridge-container-remote-install.sh | bash
+curl -fsSL https://github.com/saidani-proj/ai-box/releases/download/v1.1.0/notify-bridge-container-remote-install.sh | bash
 ```
 
 It installs the shim as `~/.local/bin/notify-send`, the uninstaller as

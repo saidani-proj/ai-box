@@ -9,7 +9,7 @@ with the host.
 Install it with a single command:
 
 ```bash
-curl -fsSL https://github.com/saidani-proj/ai-box/releases/download/v1.0.0/ai-box-remote-install.sh | bash
+curl -fsSL https://github.com/saidani-proj/ai-box/releases/download/v1.1.0/ai-box-remote-install.sh | bash
 ```
 
 Remove the installed
@@ -50,7 +50,7 @@ ai-box help        Show help
 `--network-type`/`--disable-notifs`/`--` are rejected on every command other
 than `install`.
 
-`--version` prints the version number (1.0.0) and exits.
+`--version` prints the version number (1.1.0) and exits.
 
 ## How it works
 

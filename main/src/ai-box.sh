@@ -19,14 +19,14 @@ usage() {
     echo "                     (no --network option, Docker default)"
     echo "  --disable-notifs Do not mount ~/.ai-box/notifs at /notifs (install only, default on)"
     echo "  --               Everything after '--' is passed to 'docker create' (install only)"
-    echo "  --version        Print the version number (1.0.0) and exit"
+    echo "  --version        Print the version number (1.1.0) and exit"
 }
 
 cmd="${1:-}"
 shift || true
 
 if [ "$cmd" = "--version" ]; then
-    echo "ai-box 1.0.0"
+    echo "ai-box 1.1.0"
     exit 0
 fi
 
@@ -56,7 +56,7 @@ while [ $# -gt 0 ]; do
             add_notifs=0; mount_opt=1; shift
             ;;
         --version)
-            echo "ai-box 1.0.0"; exit 0
+            echo "ai-box 1.1.0"; exit 0
             ;;
         --)
             shift

@@ -15,7 +15,7 @@ A notification plugin for OpenCode V2 using `notify-send`.
 With a single command :
 
 ```bash
-curl -fsSL https://github.com/saidani-proj/ai-box/releases/download/v1.0.0/opencode-notify-plugin-remote-install.sh | bash
+curl -fsSL https://github.com/saidani-proj/ai-box/releases/download/v1.1.0/opencode-notify-plugin-remote-install.sh | bash
 ```
 
 This installs the plugin as `ai-box-notify` into `~/.config/opencode/plugins/ai-box-notify/`, and installs the uninstall program as `ai-box-opencode-notify-plugin-uninstall` into `~/.local/bin/` (adding it to your `PATH` in `~/.bashrc`/`~/.profile` if needed).
