@@ -36,14 +36,18 @@ ai-box help        Show help
 - `--id NAME` uses a named box (`ai-box-NAME` container) instead of the
   default `ai-box` one, and mounts `~/.ai-box/work-NAME` instead of
   `~/.ai-box/work`. Accepted by all commands.
-- `--disable-net` (install only, net on by default) skips mapping
-  `host.docker.internal` to the host.
+- `--network-type TYPE` (install only, `full` by default) selects the
+  container network mode:
+  - `full` passes `--network host` to `docker create`;
+  - `partial` keeps Docker's default network and maps
+    `host.docker.internal` to the host gateway;
+  - `private` passes no network option at all (Docker's default behavior).
 - `--disable-notifs` (install only, notifs on by default) skips mounting
   `~/.ai-box/notifs` at `/notifs`.
 - `--` (install only): everything after `--` is passed verbatim to
   `docker create` (e.g. `ai-box install -- --cpus 2 -e FOO=bar`).
 
-`--disable-net`/`--disable-notifs`/`--` are rejected on every command other
+`--network-type`/`--disable-notifs`/`--` are rejected on every command other
 than `install`.
 
 `--version` prints the version number (1.0.0) and exits.
@@ -53,7 +57,7 @@ than `install`.
 - `install` runs `docker create -it` on `ubuntu:26.04`, named `ai-box`
   (or `ai-box-NAME` with `--id`), always mounting the box workdir at `/work`
   (`~/.ai-box/work`, or `~/.ai-box/work-NAME` with `--id`), plus
-  `--add-host=host.docker.internal:host-gateway` (unless `--disable-net`)
+  the network mode selected by `--network-type` (`--network host` by default),
   and `-v ~/.ai-box/notifs:/notifs` (unless `--disable-notifs`). Extra
   options after `--` are forwarded to `docker create`.
 - `up` stops the box, re-points the box workdir symlink to `$PWD`, starts

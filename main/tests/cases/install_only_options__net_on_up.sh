@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # Case:   install_only_options.net_on_up
-# Command: ai-box up --disable-net
+# Command: ai-box up --network-type full
 # Context: 
-# Expect:  "Error: --disable-net/--disable-notifs only apply to install", code 1
+# Expect:  "Error: --network-type/--disable-notifs only apply to install", code 1
 set -uo pipefail
 source "/work/main/tests/lib.sh"
 setup_env
-out="$("$AI_BOX" up --disable-net 2>&1)"; code=$?
+out="$("$AI_BOX" up --network-type full 2>&1)"; code=$?
 assert_eq "$code" "1" "exit code"
-assert_contains "$out" "Error: --disable-net/--disable-notifs only apply to install"
+assert_contains "$out" "Error: --network-type/--disable-notifs only apply to install"
 
 echo "ok: install_only_options.net_on_up"

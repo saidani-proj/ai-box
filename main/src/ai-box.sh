@@ -14,7 +14,9 @@ usage() {
     echo
     echo "Options:"
     echo "  --id NAME        Use a named box: container ai-box-NAME, workdir ~/.ai-box/work-NAME (default: ai-box, ~/.ai-box/work)"
-    echo "  --disable-net    Do not map host.docker.internal to the host (install only, default on)"
+    echo "  --network-type TYPE Network mode (install only): full (default, --network host),"
+    echo "                     partial (map host.docker.internal to the host), or private"
+    echo "                     (no --network option, Docker default)"
     echo "  --disable-notifs Do not mount ~/.ai-box/notifs at /notifs (install only, default on)"
     echo "  --               Everything after '--' is passed to 'docker create' (install only)"
     echo "  --version        Print the version number (1.0.0) and exit"
@@ -29,7 +31,7 @@ if [ "$cmd" = "--version" ]; then
 fi
 
 id=""
-add_net=1
+network_type="full"
 add_notifs=1
 mount_opt=0
 create_opts=()
@@ -43,8 +45,12 @@ while [ $# -gt 0 ]; do
         --id=*)
             id="${1#*=}"; shift
             ;;
-        --disable-net)
-            add_net=0; mount_opt=1; shift
+        --network-type)
+            [ $# -ge 2 ] || { echo "Error: --network-type needs a value" >&2; exit 1; }
+            network_type="$2"; mount_opt=1; shift 2
+            ;;
+        --network-type=*)
+            network_type="${1#*=}"; mount_opt=1; shift
             ;;
         --disable-notifs)
             add_notifs=0; mount_opt=1; shift
@@ -73,9 +79,16 @@ workdir="$HOME/.ai-box/work"
 workdir_rel="~${workdir#$HOME}"
 
 if [ "$cmd" != "install" ] && [ "$mount_opt" -eq 1 ]; then
-    echo "Error: --disable-net/--disable-notifs only apply to install" >&2
+    echo "Error: --network-type/--disable-notifs only apply to install" >&2
     exit 1
 fi
+case "$network_type" in
+    full|partial|private) ;;
+    *)
+        echo "Error: --network-type must be one of: full, partial, private" >&2
+        exit 1
+        ;;
+esac
 if [ "$cmd" != "install" ] && [ ${#create_opts[@]} -gt 0 ]; then
     echo "Error: options after '--' only apply to install" >&2
     exit 1
@@ -84,7 +97,11 @@ fi
 case "$cmd" in
     install)
         args=(create -it)
-        [ "$add_net" -eq 1 ] && args+=(--add-host=host.docker.internal:host-gateway)
+        case "$network_type" in
+            full) args+=(--network host) ;;
+            partial) args+=(--add-host=host.docker.internal:host-gateway) ;;
+            private) ;;
+        esac
         [ "$add_notifs" -eq 1 ] && args+=(-v "$HOME/.ai-box/notifs:/notifs")
         args+=(-v "$workdir:/work")
         [ ${#create_opts[@]} -gt 0 ] && args+=("${create_opts[@]}")

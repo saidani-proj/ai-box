@@ -45,7 +45,7 @@ OVERRIDES = {
 "install.default": '''setup_env
 out="$("$AI_BOX" install 2>&1)"; code=$?
 assert_eq "$code" "0" "exit code"
-assert_log_contains "--add-host=host.docker.internal:host-gateway"
+assert_log_contains "--network host"
 assert_log_contains "--name ai-box"
 assert_log_contains "ubuntu:26.04"
 assert_log_contains ".ai-box/notifs:/notifs"
@@ -61,10 +61,17 @@ out="$("$AI_BOX" install --id=test 2>&1)"; code=$?
 assert_eq "$code" "0" "exit code"
 assert_log_contains "--name ai-box-test"
 ''',
-"install.disable_net": '''setup_env
-out="$("$AI_BOX" install --disable-net 2>&1)"; code=$?
+"install.network_type_partial": '''setup_env
+out="$("$AI_BOX" install --network-type partial 2>&1)"; code=$?
 assert_eq "$code" "0" "exit code"
-if grep -q -- '--add-host' "$MOCK_DOCKER_LOG"; then fail "--add-host should be omitted with --disable-net"; fi
+assert_log_contains "--add-host=host.docker.internal:host-gateway"
+if grep -q -- '--network' "$MOCK_DOCKER_LOG"; then fail "no --network flag expected with partial"; fi
+''',
+"install.network_type_private": '''setup_env
+out="$("$AI_BOX" install --network-type private 2>&1)"; code=$?
+assert_eq "$code" "0" "exit code"
+if grep -q -- '--network' "$MOCK_DOCKER_LOG"; then fail "no --network flag expected with private"; fi
+if grep -q -- '--add-host' "$MOCK_DOCKER_LOG"; then fail "no --add-host expected with private"; fi
 ''',
 "install.disable_notifs": '''setup_env
 out="$("$AI_BOX" install --disable-notifs 2>&1)"; code=$?

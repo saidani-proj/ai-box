@@ -8,7 +8,7 @@ source "/work/main/tests/lib.sh"
 setup_env
 out="$("$AI_BOX" install 2>&1)"; code=$?
 assert_eq "$code" "0" "exit code"
-assert_log_contains "--add-host=host.docker.internal:host-gateway"
+assert_log_contains "--network host"
 assert_log_contains "--name ai-box"
 assert_log_contains "ubuntu:26.04"
 assert_log_contains ".ai-box/notifs:/notifs"
