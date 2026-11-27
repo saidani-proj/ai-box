@@ -9,6 +9,6 @@ setup_env
 "$INSTALL_SH" >/dev/null
 out="$("$HOME/.local/bin/ai-box" --version 2>&1)"; code=$?
 assert_eq "$code" "0" "exit code"
-assert_contains "$out" "1.1.0"
+assert_contains "$out" "1.1.1"
 
 echo "ok: install_uninstall_scripts.installed_version"

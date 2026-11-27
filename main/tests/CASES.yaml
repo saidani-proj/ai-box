@@ -20,10 +20,10 @@ cases:
     children:
       - name: flag
         command: ai-box --version
-        expect: '"ai-box 1.1.0", code 0'
+        expect: '"ai-box 1.1.1", code 0'
       - name: after_command
         command: ai-box up --version
-        expect: '"ai-box 1.1.0", code 0'
+        expect: '"ai-box 1.1.1", code 0'
 
   - name: unknown_command
     command: ai-box foobar

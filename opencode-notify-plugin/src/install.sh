@@ -28,7 +28,7 @@ cp "${SCRIPT_DIR}/notify.js" "${PLUGIN_DIR}/index.js"
 cat > "${PLUGIN_DIR}/package.json" << 'EOF'
 {
   "name": "ai-box-notify",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "type": "module",
   "main": "index.js"
 }

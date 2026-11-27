@@ -26,7 +26,7 @@ For details: [`main/README.md`](main/README.md).
 Install it with:
 
 ```bash
-curl -fsSL https://github.com/saidani-proj/ai-box/releases/download/v1.1.0/ai-box-remote-install.sh | bash
+curl -fsSL https://github.com/saidani-proj/ai-box/releases/download/v1.1.1/ai-box-remote-install.sh | bash
 ```
 
 Remove it with `ai-box-uninstall`. Inside the box, run `apt update` as root
@@ -50,13 +50,13 @@ For details: [`notify-bridge/README.md`](notify-bridge/README.md).
 Install it on the host with:
 
 ```bash
-curl -fsSL https://github.com/saidani-proj/ai-box/releases/download/v1.1.0/notify-bridge-host-remote-install.sh | bash
+curl -fsSL https://github.com/saidani-proj/ai-box/releases/download/v1.1.1/notify-bridge-host-remote-install.sh | bash
 ```
 
 And inside the container with:
 
 ```bash
-curl -fsSL https://github.com/saidani-proj/ai-box/releases/download/v1.1.0/notify-bridge-container-remote-install.sh | bash
+curl -fsSL https://github.com/saidani-proj/ai-box/releases/download/v1.1.1/notify-bridge-container-remote-install.sh | bash
 ```
 
 Each side is removed by its `ai-box-notify-bridge-uninstall` command.
@@ -78,7 +78,7 @@ For details: [`opencode-notify-plugin/README.md`](opencode-notify-plugin/README.
 Install it with:
 
 ```bash
-curl -fsSL https://github.com/saidani-proj/ai-box/releases/download/v1.1.0/opencode-notify-plugin-remote-install.sh | bash
+curl -fsSL https://github.com/saidani-proj/ai-box/releases/download/v1.1.1/opencode-notify-plugin-remote-install.sh | bash
 ```
 
 Uninstall with `ai-box-opencode-notify-plugin-uninstall`.
@@ -95,8 +95,8 @@ Typical setup:
 # host: create and enter the box
 ai-box install && ai-box up
 # host: listener + autostart entry
-curl -fsSL https://github.com/saidani-proj/ai-box/releases/download/v1.1.0/notify-bridge-host-remote-install.sh | bash
+curl -fsSL https://github.com/saidani-proj/ai-box/releases/download/v1.1.1/notify-bridge-host-remote-install.sh | bash
 # inside the box: notify-send shim, then the OpenCode plugin
-curl -fsSL https://github.com/saidani-proj/ai-box/releases/download/v1.1.0/notify-bridge-container-remote-install.sh | bash
-curl -fsSL https://github.com/saidani-proj/ai-box/releases/download/v1.1.0/opencode-notify-plugin-remote-install.sh | bash
+curl -fsSL https://github.com/saidani-proj/ai-box/releases/download/v1.1.1/notify-bridge-container-remote-install.sh | bash
+curl -fsSL https://github.com/saidani-proj/ai-box/releases/download/v1.1.1/opencode-notify-plugin-remote-install.sh | bash
 ```

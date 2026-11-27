@@ -242,7 +242,7 @@ assert_contains "$out" "removed ai-box"
 "$INSTALL_SH" >/dev/null
 out="$("$HOME/.local/bin/ai-box" --version 2>&1)"; code=$?
 assert_eq "$code" "0" "exit code"
-assert_contains "$out" "1.1.0"
+assert_contains "$out" "1.1.1"
 ''',
 "install_uninstall_scripts.uninstall_idempotent": '''setup_env
 out="$("$UNINSTALL_SH" </dev/null 2>&1)"; code=$?

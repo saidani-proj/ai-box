@@ -4,7 +4,7 @@ set -euo pipefail
 
 # URL of the installation archive — edit this line to point to your server.
 # AI_BOX_NOTIF_TARBALL_URL overrides it when set (useful for testing).
-archive_url="${AI_BOX_NOTIF_TARBALL_URL:-https://github.com/saidani-proj/ai-box/releases/download/v1.1.0/notify-bridge-container-1.1.0.tar.gz}"
+archive_url="${AI_BOX_NOTIF_TARBALL_URL:-https://github.com/saidani-proj/ai-box/releases/download/v1.1.1/notify-bridge-container-1.1.1.tar.gz}"
 
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT

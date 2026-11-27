@@ -40,7 +40,7 @@ cases:
         expect: '"must be absolute", code 1'
       - name: version
         command: listener.sh --version
-        expect: '"1.1.0", code 0'
+        expect: '"1.1.1", code 0'
       - name: rejects_shim_as_send
         expect: '"shim", code 1'
       - name: missing_send_binary
