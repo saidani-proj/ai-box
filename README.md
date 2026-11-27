@@ -17,7 +17,7 @@ ai-box down        Stop the box
 ai-box uninstall   Remove the box
 ```
 
-Useful options: `--id NAME` for a named box, `--network-type full|partial|private`
+Useful options: `--id NAME` for a named box, `--network-integration full|limited|none`
 and `--disable-notifs` at install time, and anything after `--` is forwarded
 to `docker create`.
 

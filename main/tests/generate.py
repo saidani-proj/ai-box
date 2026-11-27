@@ -61,17 +61,17 @@ out="$("$AI_BOX" install --id=test 2>&1)"; code=$?
 assert_eq "$code" "0" "exit code"
 assert_log_contains "--name ai-box-test"
 ''',
-"install.network_type_partial": '''setup_env
-out="$("$AI_BOX" install --network-type partial 2>&1)"; code=$?
+"install.network_integration_limited": '''setup_env
+out="$("$AI_BOX" install --network-integration limited 2>&1)"; code=$?
 assert_eq "$code" "0" "exit code"
 assert_log_contains "--add-host=host.docker.internal:host-gateway"
-if grep -q -- '--network' "$MOCK_DOCKER_LOG"; then fail "no --network flag expected with partial"; fi
+if grep -q -- '--network' "$MOCK_DOCKER_LOG"; then fail "no --network flag expected with limited"; fi
 ''',
-"install.network_type_private": '''setup_env
-out="$("$AI_BOX" install --network-type private 2>&1)"; code=$?
+"install.network_integration_none": '''setup_env
+out="$("$AI_BOX" install --network-integration none 2>&1)"; code=$?
 assert_eq "$code" "0" "exit code"
-if grep -q -- '--network' "$MOCK_DOCKER_LOG"; then fail "no --network flag expected with private"; fi
-if grep -q -- '--add-host' "$MOCK_DOCKER_LOG"; then fail "no --add-host expected with private"; fi
+if grep -q -- '--network' "$MOCK_DOCKER_LOG"; then fail "no --network flag expected with none"; fi
+if grep -q -- '--add-host' "$MOCK_DOCKER_LOG"; then fail "no --add-host expected with none"; fi
 ''',
 "install.disable_notifs": '''setup_env
 out="$("$AI_BOX" install --disable-notifs 2>&1)"; code=$?

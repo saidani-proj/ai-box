@@ -47,18 +47,18 @@ cases:
       - name: id_missing_value
         command: ai-box install --id
         expect: '"Error: --id needs a value", code 1'
-      - name: network_type_partial
-        command: ai-box install --network-type partial
+      - name: network_integration_limited
+        command: ai-box install --network-integration limited
         expect: --add-host present, no --network flag
-      - name: network_type_private
-        command: ai-box install --network-type private
+      - name: network_integration_none
+        command: ai-box install --network-integration none
         expect: no --network flag, no --add-host
-      - name: network_type_invalid
-        command: ai-box install --network-type bogus
-        expect: '"Error: --network-type must be one of: full, partial, private", code 1'
-      - name: network_type_missing_value
-        command: ai-box install --network-type
-        expect: '"Error: --network-type needs a value", code 1'
+      - name: network_integration_invalid
+        command: ai-box install --network-integration bogus
+        expect: '"Error: --network-integration must be one of: full, limited, none", code 1'
+      - name: network_integration_missing_value
+        command: ai-box install --network-integration
+        expect: '"Error: --network-integration needs a value", code 1'
       - name: disable_notifs
         command: ai-box install --disable-notifs
         expect: no notifs volume mounted
@@ -72,13 +72,13 @@ cases:
   - name: install_only_options
     children:
       - name: net_on_up
-        command: ai-box up --network-type full
-        expect: '"Error: --network-type/--disable-notifs only apply to install", code 1'
+        command: ai-box up --network-integration full
+        expect: '"Error: --network-integration/--disable-notifs only apply to install", code 1'
       - name: notifs_on_down
         command: ai-box down --disable-notifs
-        expect: '"Error: --network-type/--disable-notifs only apply to install", code 1'
+        expect: '"Error: --network-integration/--disable-notifs only apply to install", code 1'
       - name: net_on_exe
-        command: ai-box exe --network-type full
+        command: ai-box exe --network-integration full
         expect: error, code 1
       - name: notifs_on_root
         command: ai-box root --disable-notifs

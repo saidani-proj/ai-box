@@ -14,8 +14,8 @@ usage() {
     echo
     echo "Options:"
     echo "  --id NAME        Use a named box: container ai-box-NAME, workdir ~/.ai-box/work-NAME (default: ai-box, ~/.ai-box/work)"
-    echo "  --network-type TYPE Network mode (install only): full (default, --network host),"
-    echo "                     partial (map host.docker.internal to the host), or private"
+    echo "  --network-integration MODE Network integration (install only): full (default, --network host),"
+    echo "                     limited (map host.docker.internal to the host), or none"
     echo "                     (no --network option, Docker default)"
     echo "  --disable-notifs Do not mount ~/.ai-box/notifs at /notifs (install only, default on)"
     echo "  --               Everything after '--' is passed to 'docker create' (install only)"
@@ -31,7 +31,7 @@ if [ "$cmd" = "--version" ]; then
 fi
 
 id=""
-network_type="full"
+network_integration="full"
 add_notifs=1
 mount_opt=0
 create_opts=()
@@ -45,12 +45,12 @@ while [ $# -gt 0 ]; do
         --id=*)
             id="${1#*=}"; shift
             ;;
-        --network-type)
-            [ $# -ge 2 ] || { echo "Error: --network-type needs a value" >&2; exit 1; }
-            network_type="$2"; mount_opt=1; shift 2
+        --network-integration)
+            [ $# -ge 2 ] || { echo "Error: --network-integration needs a value" >&2; exit 1; }
+            network_integration="$2"; mount_opt=1; shift 2
             ;;
-        --network-type=*)
-            network_type="${1#*=}"; mount_opt=1; shift
+        --network-integration=*)
+            network_integration="${1#*=}"; mount_opt=1; shift
             ;;
         --disable-notifs)
             add_notifs=0; mount_opt=1; shift
@@ -79,13 +79,13 @@ workdir="$HOME/.ai-box/work"
 workdir_rel="~${workdir#$HOME}"
 
 if [ "$cmd" != "install" ] && [ "$mount_opt" -eq 1 ]; then
-    echo "Error: --network-type/--disable-notifs only apply to install" >&2
+    echo "Error: --network-integration/--disable-notifs only apply to install" >&2
     exit 1
 fi
-case "$network_type" in
-    full|partial|private) ;;
+case "$network_integration" in
+    full|limited|none) ;;
     *)
-        echo "Error: --network-type must be one of: full, partial, private" >&2
+        echo "Error: --network-integration must be one of: full, limited, none" >&2
         exit 1
         ;;
 esac
@@ -97,10 +97,10 @@ fi
 case "$cmd" in
     install)
         args=(create -it)
-        case "$network_type" in
+        case "$network_integration" in
             full) args+=(--network host) ;;
-            partial) args+=(--add-host=host.docker.internal:host-gateway) ;;
-            private) ;;
+            limited) args+=(--add-host=host.docker.internal:host-gateway) ;;
+            none) ;;
         esac
         [ "$add_notifs" -eq 1 ] && args+=(-v "$HOME/.ai-box/notifs:/notifs")
         args+=(-v "$workdir:/work")

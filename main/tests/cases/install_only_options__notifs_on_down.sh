@@ -2,12 +2,12 @@
 # Case:   install_only_options.notifs_on_down
 # Command: ai-box down --disable-notifs
 # Context: 
-# Expect:  "Error: --network-type/--disable-notifs only apply to install", code 1
+# Expect:  "Error: --network-integration/--disable-notifs only apply to install", code 1
 set -uo pipefail
 source "/work/main/tests/lib.sh"
 setup_env
 out="$("$AI_BOX" down --disable-notifs 2>&1)"; code=$?
 assert_eq "$code" "1" "exit code"
-assert_contains "$out" "Error: --network-type/--disable-notifs only apply to install"
+assert_contains "$out" "Error: --network-integration/--disable-notifs only apply to install"
 
 echo "ok: install_only_options.notifs_on_down"
